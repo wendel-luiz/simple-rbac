@@ -2,34 +2,54 @@ import { type Kysely, sql } from 'kysely'
 
 export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
-    .createTable('person')
+    .createTable('tenant')
     .addColumn('id', 'serial', (col) => col.primaryKey())
-    .addColumn('first_name', 'varchar', (col) => col.notNull())
-    .addColumn('last_name', 'varchar')
-    .addColumn('gender', 'varchar(50)', (col) => col.notNull())
-    .addColumn('created_at', 'timestamp', (col) =>
+    .addColumn('code', 'uuid', (col) =>
+      col.notNull().defaultTo(sql`gen_random_uuid()`),
+    )
+    .addColumn('name', 'text')
+    .addColumn('description', 'text', (col) => col.notNull())
+    .addColumn('createdAt', 'timestamp', (col) =>
+      col.defaultTo(sql`now()`).notNull(),
+    )
+    .addColumn('updatedAt', 'timestamp', (col) =>
       col.defaultTo(sql`now()`).notNull(),
     )
     .execute()
 
   await db.schema
-    .createTable('pet')
-    .addColumn('id', 'serial', (col) => col.primaryKey())
-    .addColumn('name', 'varchar', (col) => col.notNull().unique())
-    .addColumn('owner_id', 'integer', (col) =>
-      col.references('person.id').onDelete('cascade').notNull(),
-    )
-    .addColumn('species', 'varchar', (col) => col.notNull())
+    .createIndex('tenant_code_index')
+    .on('tenant')
+    .column('code')
     .execute()
 
   await db.schema
-    .createIndex('pet_owner_id_index')
-    .on('pet')
-    .column('owner_id')
+    .createTable('user')
+    .addColumn('id', 'serial', (col) => col.primaryKey())
+    .addColumn('code', 'uuid', (col) =>
+      col.notNull().defaultTo(sql`gen_random_uuid()`),
+    )
+    .addColumn('tenantId', 'integer', (col) =>
+      col.references('tenant.id').onDelete('cascade').notNull(),
+    )
+    .addColumn('email', 'text', (col) => col.notNull())
+    .addColumn('password', 'text', (col) => col.notNull())
+    .addColumn('createdAt', 'timestamp', (col) =>
+      col.defaultTo(sql`now()`).notNull(),
+    )
+    .addColumn('updatedAt', 'timestamp', (col) =>
+      col.defaultTo(sql`now()`).notNull(),
+    )
+    .execute()
+
+  await db.schema
+    .createIndex('user_code_index')
+    .on('user')
+    .column('code')
     .execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
-  await db.schema.dropTable('pet').execute()
-  await db.schema.dropTable('person').execute()
+  await db.schema.dropTable('tenant').execute()
+  await db.schema.dropTable('user').execute()
 }

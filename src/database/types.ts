@@ -11,7 +11,7 @@ export interface Database {
   userRole: UserRoleTable
   role: RoleTable
   resource: ResourceTable
-  Action: ActionTable
+  action: ActionTable
   Permission: PermissionTable
 }
 
@@ -32,7 +32,6 @@ export interface UserTable {
   id: Generated<number>
   code: Generated<string>
   tenantId: string
-  name: string
   email: string
   password: string
   createdAt: Generated<string>

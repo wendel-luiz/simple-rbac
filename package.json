@@ -4,9 +4,11 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "tsx watch src/index.ts"
+    "dev": "npx env-cmd tsx watch src/index.ts",
+    "migrate:dev": "tsup src/database && npx env-cmd node dist/migrate.js"
   },
   "devDependencies": {
+    "@types/pg": "^8.11.4",
     "@typescript-eslint/eslint-plugin": "^6.4.0",
     "eslint": "^8.0.1",
     "eslint-config-prettier": "^9.1.0",
@@ -20,7 +22,9 @@
     "typescript": "*"
   },
   "dependencies": {
+    "env-cmd": "^10.1.0",
     "kysely": "^0.27.3",
+    "pg": "^8.11.3",
     "zod": "^3.22.4"
   }
 }
