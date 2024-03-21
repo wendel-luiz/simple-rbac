@@ -24,9 +24,9 @@ export interface TenantTable {
   updatedAt: Generated<string>
 }
 
-export type Person = Selectable<TenantTable>
-export type NewPerson = Insertable<TenantTable>
-export type PersonUpdate = Updateable<TenantTable>
+export type Tenant = Selectable<TenantTable>
+export type NewTenant = Insertable<TenantTable>
+export type TenantUpdate = Updateable<TenantTable>
 
 export interface UserTable {
   id: Generated<number>
