@@ -9,7 +9,7 @@ export class UserService {
     private readonly tenantRepo: TenantRepository,
   ) {}
 
-  async create(tenantId: string, props: CreateUser): Promise<string> {
+  async create(tenantId: string, props: CreateUser): Promise<void> {
     const tenant = await this.tenantRepo.findById(tenantId)
     if (tenant == null) {
       throw new NotFoundException('Tenant not found.')
@@ -19,7 +19,5 @@ export class UserService {
     if (user == null) {
       throw new InternalServerError('Error while inserting a new user.')
     }
-
-    return user.code
   }
 }
