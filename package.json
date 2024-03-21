@@ -8,6 +8,8 @@
     "migrate:dev": "tsup src/database && npx env-cmd node dist/migrate.js"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
     "@types/pg": "^8.11.4",
     "@typescript-eslint/eslint-plugin": "^6.4.0",
     "eslint": "^8.0.1",
@@ -22,7 +24,9 @@
     "typescript": "*"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "env-cmd": "^10.1.0",
+    "express": "^4.19.1",
     "kysely": "^0.27.3",
     "pg": "^8.11.3",
     "zod": "^3.22.4"

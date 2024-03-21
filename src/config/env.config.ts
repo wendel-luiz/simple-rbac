@@ -3,6 +3,7 @@ import { z } from 'zod'
 
 const envSchema = z.object({
   NODE_ENV: z.string(),
+  SERVER_PORT: z.string().transform((value) => Number(value)),
   DB_PORT: z.string().transform((value) => Number(value)),
   DB_HOST: z.string(),
   DB_USER: z.string(),
@@ -17,6 +18,7 @@ class Environment {
   constructor() {
     const values = envSchema.safeParse({
       NODE_ENV: process.env.NODE_ENV,
+      SERVER_PORT: process.env.SERVER_PORT,
       DB_PORT: process.env.DB_PORT,
       DB_HOST: process.env.DB_HOST,
       DB_USER: process.env.DB_USER,
@@ -34,6 +36,10 @@ class Environment {
 
   public get NODE_ENV(): string {
     return this.props.NODE_ENV
+  }
+
+  public get SERVER_PORT(): number {
+    return this.props.SERVER_PORT
   }
 
   public get DB_PORT(): number {
