@@ -9,6 +9,11 @@ import {
 import { type RequestHandler } from 'express'
 import { type GetRoleByIdParams } from './query/dtos/get-by-id'
 import { TenantRepository } from 'modules/tenant/commands/tenant.repository'
+import { UserRepository } from 'modules/user/commands/user.repository'
+import {
+  type AddUserBody,
+  type AddUserParams,
+} from './command/dtos/add-user.dto'
 
 export class RoleHandler {
   private readonly command: RoleCommand
@@ -18,6 +23,7 @@ export class RoleHandler {
     this.command = new RoleCommand(
       new RoleRepository(db),
       new TenantRepository(db),
+      new UserRepository(db),
     )
     this.query = new RoleQuery(db)
   }
@@ -38,6 +44,19 @@ export class RoleHandler {
       )
       .catch((err) => next(err))
   }
+
+  public addUser: RequestHandler<AddUserParams, unknown, AddUserBody, unknown> =
+    (req, res, next) => {
+      this.command
+        .addUser(req.params.roleId, req.body.userId)
+        .then((result) =>
+          res
+            .status(201)
+            .setHeader('Location', '/role/' + result)
+            .send(),
+        )
+        .catch((err) => next(err))
+    }
 
   public getRoleById: RequestHandler<
     GetRoleByIdParams,

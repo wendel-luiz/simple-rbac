@@ -36,3 +36,9 @@ export class BadCredentialsException extends Exception {
     super(message, 400)
   }
 }
+
+export class ForbiddenException extends Exception {
+  constructor(message: string) {
+    super(message, 403)
+  }
+}

@@ -116,6 +116,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .createTable('userRole')
+    .addColumn('id', 'serial', (col) => col.primaryKey())
     .addColumn('userId', 'integer', (col) =>
       col.references('user.id').onDelete('cascade').notNull(),
     )
@@ -129,6 +130,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .createTable('permission')
+    .addColumn('id', 'serial', (col) => col.primaryKey())
     .addColumn('roleId', 'integer', (col) =>
       col.references('role.id').onDelete('cascade').notNull(),
     )

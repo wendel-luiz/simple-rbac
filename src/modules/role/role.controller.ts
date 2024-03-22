@@ -4,6 +4,10 @@ import { paramParser } from 'middleware/param-parser'
 import { RoleHandler } from './role.handler'
 import { createRoleBodySchema } from './command/dtos/create-role.dto'
 import { getRoleByIdParamsSchema } from './query/dtos/get-by-id'
+import {
+  addUserBodySchema,
+  addUserParamSchema,
+} from './command/dtos/add-user.dto'
 
 export class RoleController {
   private readonly _handler: RoleHandler
@@ -24,6 +28,13 @@ export class RoleController {
       '/tenant/:tenantId',
       bodyParser(createRoleBodySchema),
       this._handler.createRole,
+    )
+
+    this._router.post(
+      '/:roleId/add-user',
+      paramParser(addUserParamSchema),
+      bodyParser(addUserBodySchema),
+      this._handler.addUser,
     )
 
     this._router.get(

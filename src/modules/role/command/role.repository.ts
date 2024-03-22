@@ -1,4 +1,9 @@
-import { type Database, type NewRoleTable, type Role } from 'database/types'
+import {
+  type NewUserRole,
+  type Database,
+  type NewRoleTable,
+  type Role,
+} from 'database/types'
 import { type Kysely } from 'kysely'
 
 export class RoleRepository {
@@ -19,11 +24,26 @@ export class RoleRepository {
   async isNameUsed(name: string): Promise<boolean> {
     const founded = await this.db
       .selectFrom('role')
-      .select('id')
+      .select('role.id')
       .leftJoin('tenant', 'tenant.id', 'role.id')
       .where('role.name', '=', name)
       .executeTakeFirst()
 
     return founded != null
+  }
+
+  async isAlreadyIncluded(userId: number, roleId: number): Promise<boolean> {
+    const result = await this.db
+      .selectFrom('userRole')
+      .select('userRole.id')
+      .where('userRole.roleId', '=', roleId)
+      .where('userRole.userId', '=', userId)
+      .executeTakeFirst()
+
+    return result != null
+  }
+
+  async addToRole(userRole: NewUserRole): Promise<void> {
+    await this.db.insertInto('userRole').values(userRole).executeTakeFirst()
   }
 }

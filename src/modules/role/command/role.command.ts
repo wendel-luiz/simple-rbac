@@ -2,12 +2,19 @@ import { generate } from 'short-uuid'
 import { type RoleRepository } from './role.repository'
 import { type CreateRoleBody } from './dtos/create-role.dto'
 import { type TenantRepository } from 'modules/tenant/commands/tenant.repository'
-import { ConflictException, NotFoundException } from 'lib/exceptions'
+import {
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+} from 'lib/exceptions'
+import { type UserRepository } from 'modules/user/commands/user.repository'
+import { type Command } from 'lib/response'
 
 export class RoleCommand {
   constructor(
     private readonly roleRepo: RoleRepository,
     private readonly tenantRepo: TenantRepository,
+    private readonly userRepo: UserRepository,
   ) {}
 
   async create(tenantId: string, props: CreateRoleBody): Promise<string> {
@@ -31,5 +38,33 @@ export class RoleCommand {
     })
 
     return code
+  }
+
+  async addUser(roleId: string, userId: string): Command {
+    const role = await this.roleRepo.findById(roleId)
+    if (role == null) {
+      throw new NotFoundException('Role not found.')
+    }
+
+    const user = await this.userRepo.findById(userId)
+    if (user == null) {
+      throw new NotFoundException('User not found.')
+    }
+
+    if (role.tenantId !== user.tenantId) {
+      throw new ForbiddenException('Cannot add a user from different tenant.')
+    }
+
+    const isIncluded = await this.roleRepo.isAlreadyIncluded(user.id, role.id)
+    if (isIncluded) {
+      throw new ConflictException('User already included.')
+    }
+
+    await this.roleRepo.addToRole({
+      roleId: role.id,
+      userId: user.id,
+    })
+
+    return role.code
   }
 }
