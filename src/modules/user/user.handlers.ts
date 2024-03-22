@@ -1,13 +1,13 @@
 import { type RequestHandler } from 'express'
 import { UserRepository } from './commands/user.repository'
-import { TenantRepository } from 'modules/tenant/tenant.repository'
+import { TenantRepository } from 'modules/tenant/commands/tenant.repository'
 import { db } from 'database/connection'
 import {
   type CreateUserBody,
   type CreateUserParams,
 } from './commands/dtos/create-user.dto'
 import { UserCommand } from './commands/user.commands'
-import { GetUserByIdParams } from './queries/dtos/get-by-id.dto'
+import { type GetUserByIdParams } from './queries/dtos/get-by-id.dto'
 import { UserQuery } from './queries/user.queries'
 
 export class UserHandler {

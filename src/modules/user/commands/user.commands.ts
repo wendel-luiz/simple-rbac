@@ -1,4 +1,4 @@
-import { type TenantRepository } from 'modules/tenant/tenant.repository'
+import { type TenantRepository } from 'modules/tenant/commands/tenant.repository'
 import { type UserRepository } from './user.repository'
 import { type CreateUserBody } from './dtos/create-user.dto'
 import { NotFoundException } from 'lib/exceptions'
