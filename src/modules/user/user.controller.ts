@@ -1,8 +1,12 @@
 import express, { type Router } from 'express'
-import { createUserBodySchema, createUserParamSchema } from './user.types'
 import { paramParser } from 'middleware/param-parser'
 import { bodyParser } from 'middleware/body-parser'
 import { UserHandler } from './user.handlers'
+import {
+  createUserBodySchema,
+  createUserParamSchema,
+} from './commands/dtos/create-user.dto'
+import { getUserByIdParamsSchema } from './queries/dtos/get-by-id.dto'
 
 export class UserController {
   private readonly _router: Router
@@ -25,6 +29,12 @@ export class UserController {
       paramParser(createUserParamSchema),
       bodyParser(createUserBodySchema),
       this._handler.createUser,
+    )
+
+    this._router.get(
+      '/:userId',
+      paramParser(getUserByIdParamsSchema),
+      this._handler.getUserById,
     )
   }
 }

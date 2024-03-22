@@ -1,7 +1,8 @@
+import { env } from 'config/env.config'
 import { type NextFunction, type Request, type Response } from 'express'
-import { Exception, InternalServerError } from 'lib/exceptions'
-import { formatZodError } from 'utils/format-zod-errors'
+import { Exception } from 'lib/exceptions'
 import { z } from 'zod'
+import { fromZodError } from 'zod-validation-error'
 
 export function errorHandler(
   err: unknown,
@@ -10,24 +11,17 @@ export function errorHandler(
   next: NextFunction,
 ): unknown {
   if (err instanceof Exception) {
-    if (err instanceof InternalServerError) {
-      console.error(
-        `Internal Server Error: Message: ${err.message} Stack: ${err.stack}`,
-      )
-    }
-
     return res.status(err.code).json({
-      status: err.code,
-      message: 'An error has occured.',
-      error: err.message,
+      message: err.message,
     })
   }
 
   if (err instanceof z.ZodError) {
     return res.status(403).json({
-      status: 403,
-      message: 'A validation error has occured.',
-      errors: formatZodError(err),
+      message:
+        env.NODE_ENV !== 'prod'
+          ? fromZodError(err).toString()
+          : 'Validation error',
     })
   }
 
@@ -38,8 +32,6 @@ export function errorHandler(
   )
 
   return res.status(500).json({
-    status: 500,
-    message: 'An error has occured.',
-    error: 'Internal Server Error',
+    message: 'Internal Server Error.',
   })
 }

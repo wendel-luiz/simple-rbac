@@ -5,7 +5,6 @@ import type http from 'http'
 import { UserController } from 'modules/user/user.controller'
 import { TenantController } from 'modules/tenant/tenant.controller'
 import { errorHandler } from 'middleware/error-handler'
-import { responseHandler } from 'middleware/response-handler'
 
 export class Server {
   private readonly _app: Application
@@ -33,7 +32,6 @@ export class Server {
     this._app.use('/tenant', this._tenantController.getRouter())
 
     this._app.use(errorHandler)
-    this._app.use(responseHandler)
   }
 
   private serve(): http.Server {

@@ -4,7 +4,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable('tenant')
     .addColumn('id', 'serial', (col) => col.primaryKey())
-    .addColumn('code', 'text', (col) => col.notNull())
+    .addColumn('code', 'text', (col) => col.notNull().unique())
     .addColumn('name', 'text')
     .addColumn('description', 'text', (col) => col.notNull())
     .addColumn('createdAt', 'timestamp', (col) =>
@@ -24,11 +24,11 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable('user')
     .addColumn('id', 'serial', (col) => col.primaryKey())
-    .addColumn('code', 'text', (col) => col.notNull())
+    .addColumn('code', 'text', (col) => col.notNull().unique())
     .addColumn('tenantId', 'integer', (col) =>
       col.references('tenant.id').onDelete('cascade').notNull(),
     )
-    .addColumn('email', 'text', (col) => col.notNull())
+    .addColumn('email', 'text', (col) => col.notNull().unique())
     .addColumn('password', 'text', (col) => col.notNull())
     .addColumn('createdAt', 'timestamp', (col) =>
       col.defaultTo(sql`now()`).notNull(),

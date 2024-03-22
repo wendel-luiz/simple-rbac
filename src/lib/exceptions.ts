@@ -12,9 +12,3 @@ export class NotFoundException extends Exception {
     super(message, 404)
   }
 }
-
-export class InternalServerError extends Exception {
-  constructor(message: string) {
-    super(message, 500)
-  }
-}

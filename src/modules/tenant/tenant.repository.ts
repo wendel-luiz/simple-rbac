@@ -4,12 +4,8 @@ import { type Kysely } from 'kysely'
 export class TenantRepository {
   constructor(private readonly db: Kysely<Database>) {}
 
-  async insert(tenant: NewTenant): Promise<Tenant | undefined> {
-    return await this.db
-      .insertInto('tenant')
-      .values(tenant)
-      .returningAll()
-      .executeTakeFirst()
+  async insert(tenant: NewTenant): Promise<void> {
+    await this.db.insertInto('tenant').values(tenant).executeTakeFirstOrThrow()
   }
 
   async findById(id: string): Promise<Tenant | undefined> {
