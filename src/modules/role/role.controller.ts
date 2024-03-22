@@ -8,6 +8,10 @@ import {
   addUserBodySchema,
   addUserParamSchema,
 } from './command/dtos/add-user.dto'
+import {
+  addPermissionBodySchema,
+  addPermissionParamSchema,
+} from './command/dtos/add-permission.dto'
 
 export class RoleController {
   private readonly _handler: RoleHandler
@@ -35,6 +39,13 @@ export class RoleController {
       paramParser(addUserParamSchema),
       bodyParser(addUserBodySchema),
       this._handler.addUser,
+    )
+
+    this._router.post(
+      '/:roleId/add-permission',
+      paramParser(addPermissionParamSchema),
+      bodyParser(addPermissionBodySchema),
+      this._handler.addPermission,
     )
 
     this._router.get(

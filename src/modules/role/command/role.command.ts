@@ -9,12 +9,16 @@ import {
 } from 'lib/exceptions'
 import { type UserRepository } from 'modules/user/commands/user.repository'
 import { type Command } from 'lib/response'
+import { type ResourceRepository } from 'modules/resource/command/resource.repository'
+import { type ActionRepository } from 'modules/action/command/action.repository'
 
 export class RoleCommand {
   constructor(
     private readonly roleRepo: RoleRepository,
     private readonly tenantRepo: TenantRepository,
     private readonly userRepo: UserRepository,
+    private readonly resourceRepo: ResourceRepository,
+    private readonly actionRepo: ActionRepository,
   ) {}
 
   async create(tenantId: string, props: CreateRoleBody): Promise<string> {
@@ -63,6 +67,44 @@ export class RoleCommand {
     await this.roleRepo.addToRole({
       roleId: role.id,
       userId: user.id,
+    })
+
+    return role.code
+  }
+
+  async addPermission(
+    roleId: string,
+    resourceId: string,
+    actionId: string,
+  ): Command {
+    const role = await this.roleRepo.findById(roleId)
+    if (role == null) {
+      throw new NotFoundException('Role not found.')
+    }
+
+    const resource = await this.resourceRepo.findById(resourceId)
+    if (resource == null) {
+      throw new NotFoundException('Resource not found.')
+    }
+
+    const action = await this.actionRepo.findById(actionId)
+    if (action == null) {
+      throw new NotFoundException('Action not found.')
+    }
+
+    const isIncluded = await this.roleRepo.isPermissionAlreadyIncluded(
+      role.id,
+      resource.id,
+      action.id,
+    )
+    if (isIncluded) {
+      throw new ConflictException('Permission already included.')
+    }
+
+    await this.roleRepo.addPermission({
+      actionId: action.id,
+      resourceId: resource.id,
+      roleId: role.id,
     })
 
     return role.code

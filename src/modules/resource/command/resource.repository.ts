@@ -22,9 +22,9 @@ export class ResourceRepository {
   async isNameUsed(name: string): Promise<boolean> {
     const founded = await this.db
       .selectFrom('resource')
-      .select('id')
+      .select('resource.id')
       .leftJoin('tenant', 'tenant.id', 'resource.id')
-      .where('name', '=', name)
+      .where('resource.name', '=', name)
       .executeTakeFirst()
 
     return founded != null

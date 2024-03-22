@@ -6,7 +6,7 @@ import { generate } from 'short-uuid'
 
 export class ActionCommand {
   constructor(
-    private readonly ActionRepo: ActionRepository,
+    private readonly actionRepo: ActionRepository,
     private readonly tenantRepo: TenantRepository,
   ) {}
 
@@ -16,14 +16,14 @@ export class ActionCommand {
       throw new NotFoundException('Tenant not found.')
     }
 
-    const isNameUsed = await this.ActionRepo.isNameUsed(props.name)
+    const isNameUsed = await this.actionRepo.isNameUsed(props.name)
     if (isNameUsed) {
       throw new ConflictException(
         `A action called "${props.name}" already exists.`,
       )
     }
 
-    const isActionUsed = await this.ActionRepo.isActionInUse(props.action)
+    const isActionUsed = await this.actionRepo.isActionInUse(props.action)
     if (isActionUsed) {
       throw new ConflictException(
         `A action identifier called "${props.action}" already exists.`,
@@ -31,7 +31,7 @@ export class ActionCommand {
     }
 
     const code = generate()
-    await this.ActionRepo.insert({
+    await this.actionRepo.insert({
       ...props,
       code,
       tenantId: tenant.id,

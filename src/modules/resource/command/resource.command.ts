@@ -6,7 +6,7 @@ import { generate } from 'short-uuid'
 
 export class ResourceCommand {
   constructor(
-    private readonly ResourceRepo: ResourceRepository,
+    private readonly resourceRepo: ResourceRepository,
     private readonly tenantRepo: TenantRepository,
   ) {}
 
@@ -16,7 +16,7 @@ export class ResourceCommand {
       throw new NotFoundException('Tenant not found.')
     }
 
-    const isNameUsed = await this.ResourceRepo.isNameUsed(props.name)
+    const isNameUsed = await this.resourceRepo.isNameUsed(props.name)
     if (isNameUsed) {
       throw new ConflictException(
         `A resource called "${props.name}" already exists.`,
@@ -24,7 +24,7 @@ export class ResourceCommand {
     }
 
     const code = generate()
-    await this.ResourceRepo.insert({
+    await this.resourceRepo.insert({
       ...props,
       code,
       tenantId: tenant.id,

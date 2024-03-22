@@ -19,7 +19,7 @@ export class TenantRepository {
   async isNameUsed(name: string): Promise<boolean> {
     const founded = await this.db
       .selectFrom('tenant')
-      .select('id')
+      .select('tenant.id')
       .where('name', '=', name)
       .executeTakeFirst()
 

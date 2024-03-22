@@ -12,16 +12,16 @@ export class ActionRepository {
     return await this.db
       .selectFrom('action')
       .selectAll()
-      .where('code', '=', id)
+      .where('action.code', '=', id)
       .executeTakeFirst()
   }
 
   async isNameUsed(name: string): Promise<boolean> {
     const founded = await this.db
       .selectFrom('action')
-      .select('id')
+      .select('action.id')
       .leftJoin('tenant', 'tenant.id', 'action.id')
-      .where('name', '=', name)
+      .where('action.name', '=', name)
       .executeTakeFirst()
 
     return founded != null
@@ -30,7 +30,7 @@ export class ActionRepository {
   async isActionInUse(action: string): Promise<boolean> {
     const founded = await this.db
       .selectFrom('action')
-      .select('id')
+      .select('action.id')
       .leftJoin('tenant', 'tenant.id', 'action.id')
       .where('action.action', '=', action)
       .executeTakeFirst()

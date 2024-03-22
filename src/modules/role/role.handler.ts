@@ -14,6 +14,12 @@ import {
   type AddUserBody,
   type AddUserParams,
 } from './command/dtos/add-user.dto'
+import { ResourceRepository } from 'modules/resource/command/resource.repository'
+import { ActionRepository } from 'modules/action/command/action.repository'
+import {
+  type AddPermissionBody,
+  type AddPermissionParams,
+} from './command/dtos/add-permission.dto'
 
 export class RoleHandler {
   private readonly command: RoleCommand
@@ -24,6 +30,8 @@ export class RoleHandler {
       new RoleRepository(db),
       new TenantRepository(db),
       new UserRepository(db),
+      new ResourceRepository(db),
+      new ActionRepository(db),
     )
     this.query = new RoleQuery(db)
   }
@@ -57,6 +65,23 @@ export class RoleHandler {
         )
         .catch((err) => next(err))
     }
+
+  public addPermission: RequestHandler<
+    AddPermissionParams,
+    unknown,
+    AddPermissionBody,
+    unknown
+  > = (req, res, next) => {
+    this.command
+      .addPermission(req.params.roleId, req.body.resourceId, req.body.actionId)
+      .then((result) =>
+        res
+          .status(201)
+          .setHeader('Location', '/role/' + result)
+          .send(),
+      )
+      .catch((err) => next(err))
+  }
 
   public getRoleById: RequestHandler<
     GetRoleByIdParams,

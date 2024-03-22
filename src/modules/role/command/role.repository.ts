@@ -3,6 +3,7 @@ import {
   type Database,
   type NewRoleTable,
   type Role,
+  type NewPermission,
 } from 'database/types'
 import { type Kysely } from 'kysely'
 
@@ -45,5 +46,25 @@ export class RoleRepository {
 
   async addToRole(userRole: NewUserRole): Promise<void> {
     await this.db.insertInto('userRole').values(userRole).executeTakeFirst()
+  }
+
+  async isPermissionAlreadyIncluded(
+    roleId: number,
+    resourceId: number,
+    actionId: number,
+  ): Promise<boolean> {
+    const result = await this.db
+      .selectFrom('permission')
+      .select('permission.id')
+      .where('actionId', '=', actionId)
+      .where('resourceId', '=', resourceId)
+      .where('roleId', '=', roleId)
+      .executeTakeFirst()
+
+    return result != null
+  }
+
+  async addPermission(permission: NewPermission): Promise<void> {
+    await this.db.insertInto('permission').values(permission).executeTakeFirst()
   }
 }
