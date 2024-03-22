@@ -1,7 +1,8 @@
 import { type TenantRepository } from 'modules/tenant/tenant.repository'
 import { type UserRepository } from './user.repository'
-import { type CreateUser } from './user.types'
+import { type CreateUserResponse, type CreateUserBody } from './user.types'
 import { InternalServerError, NotFoundException } from 'lib/exceptions'
+import { generate } from 'short-uuid'
 
 export class UserService {
   constructor(
@@ -9,15 +10,29 @@ export class UserService {
     private readonly tenantRepo: TenantRepository,
   ) {}
 
-  async create(tenantId: string, props: CreateUser): Promise<void> {
+  async create(
+    tenantId: string,
+    props: CreateUserBody,
+  ): Promise<CreateUserResponse> {
     const tenant = await this.tenantRepo.findById(tenantId)
     if (tenant == null) {
       throw new NotFoundException('Tenant not found.')
     }
 
-    const user = await this.userRepo.insert({ ...props, tenantId })
+    const user = await this.userRepo.insert({
+      ...props,
+      tenantId: tenant.id,
+      code: generate(),
+    })
+
     if (user == null) {
       throw new InternalServerError('Error while inserting a new user.')
+    }
+
+    return {
+      id: user.code,
+      email: user.email,
+      tenantId: tenant.code,
     }
   }
 }

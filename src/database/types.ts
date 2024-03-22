@@ -17,7 +17,7 @@ export interface Database {
 
 export interface TenantTable {
   id: Generated<number>
-  code: Generated<string>
+  code: string
   name: string
   description: string
   createdAt: Generated<string>
@@ -30,8 +30,8 @@ export type TenantUpdate = Updateable<TenantTable>
 
 export interface UserTable {
   id: Generated<number>
-  code: Generated<string>
-  tenantId: string
+  code: string
+  tenantId: number
   email: string
   password: string
   createdAt: Generated<string>
@@ -44,6 +44,7 @@ export type UserUpdate = Updateable<UserTable>
 
 export interface RoleTable {
   id: Generated<number>
+  code: string
   name: string
   description: string
   createdAt: Generated<string>

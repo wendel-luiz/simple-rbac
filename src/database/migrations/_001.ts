@@ -4,9 +4,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable('tenant')
     .addColumn('id', 'serial', (col) => col.primaryKey())
-    .addColumn('code', 'uuid', (col) =>
-      col.notNull().defaultTo(sql`gen_random_uuid()`),
-    )
+    .addColumn('code', 'text', (col) => col.notNull())
     .addColumn('name', 'text')
     .addColumn('description', 'text', (col) => col.notNull())
     .addColumn('createdAt', 'timestamp', (col) =>
@@ -26,9 +24,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable('user')
     .addColumn('id', 'serial', (col) => col.primaryKey())
-    .addColumn('code', 'uuid', (col) =>
-      col.notNull().defaultTo(sql`gen_random_uuid()`),
-    )
+    .addColumn('code', 'text', (col) => col.notNull())
     .addColumn('tenantId', 'integer', (col) =>
       col.references('tenant.id').onDelete('cascade').notNull(),
     )

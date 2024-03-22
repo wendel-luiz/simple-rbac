@@ -1,7 +1,21 @@
 import { z } from 'zod'
 
-export const createUserSchema = z.object({
+// Create User
+export const createUserBodySchema = z.object({
   email: z.string().email(),
   password: z.string(),
 })
-export type CreateUser = z.infer<typeof createUserSchema>
+export type CreateUserBody = z.infer<typeof createUserBodySchema>
+
+export const createUserParamSchema = z.object({
+  tenantId: z.string(),
+})
+export type CreateUserParams = z.infer<typeof createUserParamSchema>
+
+export interface CreateUserResponse {
+  id: string
+  email: string
+  tenantId: string
+}
+
+// Find User By Id

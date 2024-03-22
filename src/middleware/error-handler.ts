@@ -1,10 +1,11 @@
 import { type NextFunction, type Request, type Response } from 'express'
 import { Exception, InternalServerError } from 'lib/exceptions'
+import { formatZodError } from 'utils/format-zod-errors'
 import { z } from 'zod'
 
-export function ErrorHandlerMiddleware(
+export function errorHandler(
   err: unknown,
-  req: Request,
+  _: Request,
   res: Response,
   next: NextFunction,
 ): unknown {
@@ -25,10 +26,8 @@ export function ErrorHandlerMiddleware(
   if (err instanceof z.ZodError) {
     return res.status(403).json({
       status: 403,
-      message: 'A validation has occured.',
-      errors: err.errors.map((error) => ({
-        [error.path.join('/')]: error.message,
-      })),
+      message: 'A validation error has occured.',
+      errors: formatZodError(err),
     })
   }
 

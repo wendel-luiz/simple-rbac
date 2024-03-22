@@ -3,7 +3,7 @@ import { TenantService } from './tenant.service'
 import { TenantRepository } from './tenant.repository'
 import { db } from 'database/connection'
 import { createTenantSchema, type CreateTenant } from './tenant.types'
-import { BodyValidator } from 'middleware/body-validator'
+import { bodyParser } from 'middleware/body-parser'
 
 export class TenantController {
   private readonly _tenantService: TenantService
@@ -16,14 +16,14 @@ export class TenantController {
   }
 
   private buildRoutes(): void {
-    this._router.post('/', BodyValidator(createTenantSchema), (req, res) => {
+    this._router.post('/', bodyParser(createTenantSchema), (req, res, next) => {
       this._tenantService
         .create(req.body as CreateTenant)
         .then((response) => {
           res.status(201).send(response)
         })
         .catch((err) => {
-          throw err
+          next(err)
         })
     })
   }
