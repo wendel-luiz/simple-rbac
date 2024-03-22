@@ -9,6 +9,8 @@ import {
 import { UserCommand } from './commands/user.commands'
 import { type GetUserByIdParams } from './queries/dtos/get-by-id.dto'
 import { UserQuery } from './queries/user.queries'
+import { type LoginBody } from './commands/dtos/login.dto'
+import { type ValidateTokenBody } from './commands/dtos/validate-token.dto'
 
 export class UserHandler {
   private readonly command: UserCommand
@@ -36,6 +38,37 @@ export class UserHandler {
           .status(201)
           .setHeader('Location', '/user/' + result)
           .send(),
+      )
+      .catch((err) => next(err))
+  }
+
+  public loginUser: RequestHandler<unknown, unknown, LoginBody, unknown> = (
+    req,
+    res,
+    next,
+  ) => {
+    this.command
+      .login(req.body.email, req.body.password, req.body.tenantId)
+      .then((result) =>
+        res.status(201).json({
+          token: result,
+        }),
+      )
+      .catch((err) => next(err))
+  }
+
+  public validateTokenUser: RequestHandler<
+    unknown,
+    unknown,
+    ValidateTokenBody,
+    unknown
+  > = (req, res, next) => {
+    this.command
+      .isTokenValid(req.body.token)
+      .then((result) =>
+        res.status(201).json({
+          isValid: result,
+        }),
       )
       .catch((err) => next(err))
   }

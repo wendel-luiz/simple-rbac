@@ -24,3 +24,15 @@ export class ConflictException extends Exception {
     super(message, 409)
   }
 }
+
+export class BadRequestException extends Exception {
+  constructor(message: string) {
+    super(message, 400)
+  }
+}
+
+export class BadCredentialsException extends Exception {
+  constructor(message: string) {
+    super(message, 400)
+  }
+}

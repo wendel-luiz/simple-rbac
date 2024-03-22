@@ -9,6 +9,8 @@ const envSchema = z.object({
   DB_USER: z.string(),
   DB_PASSWORD: z.string(),
   DB_DATABASE: z.string(),
+  TOKEN_SECRET: z.string(),
+  SERVER_NAME: z.string(),
 })
 type Env = z.infer<typeof envSchema>
 
@@ -24,6 +26,8 @@ class Environment {
       DB_USER: process.env.DB_USER,
       DB_PASSWORD: process.env.DB_PASSWORD,
       DB_DATABASE: process.env.DB_DATABASE,
+      TOKEN_SECRET: process.env.TOKEN_SECRET,
+      SERVER_NAME: process.env.SERVER_NAME,
     })
 
     if (!values.success) {
@@ -60,6 +64,14 @@ class Environment {
 
   public get DB_DATABASE(): string {
     return this.props.DB_DATABASE
+  }
+
+  public get TOKEN_SECRET(): string {
+    return this.props.TOKEN_SECRET
+  }
+
+  public get SERVER_NAME(): string {
+    return this.props.SERVER_NAME
   }
 }
 

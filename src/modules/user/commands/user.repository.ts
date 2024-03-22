@@ -16,6 +16,19 @@ export class UserRepository {
       .executeTakeFirst()
   }
 
+  async findByEmailAndTenant(
+    email: string,
+    tenantId: string,
+  ): Promise<User | undefined> {
+    return await this.db
+      .selectFrom('user')
+      .selectAll()
+      .leftJoin('tenant', 'tenant.id', 'user.tenantId')
+      .where('user.email', '=', email)
+      .where('tenant.code', '=', tenantId)
+      .executeTakeFirst()
+  }
+
   async isEmailInUse(email: string): Promise<boolean> {
     const result = await this.db
       .selectFrom('user')
