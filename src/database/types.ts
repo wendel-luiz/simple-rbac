@@ -45,6 +45,7 @@ export type UserUpdate = Updateable<UserTable>
 export interface RoleTable {
   id: Generated<number>
   code: string
+  tenantId: number
   name: string
   description: string
   createdAt: Generated<string>

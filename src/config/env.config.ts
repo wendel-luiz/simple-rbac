@@ -1,4 +1,4 @@
-import { InternalServerError } from 'lib/exceptions'
+import { InvalidEnvFileException } from 'lib/exceptions'
 import { z } from 'zod'
 
 const envSchema = z.object({
@@ -28,7 +28,7 @@ class Environment {
 
     if (!values.success) {
       console.error(values.error)
-      throw new InternalServerError('Error validating env file.')
+      throw new InvalidEnvFileException()
     }
 
     this.props = values.data
