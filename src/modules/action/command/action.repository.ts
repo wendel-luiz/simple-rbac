@@ -20,7 +20,19 @@ export class ActionRepository {
     const founded = await this.db
       .selectFrom('action')
       .select('id')
+      .leftJoin('tenant', 'tenant.id', 'action.id')
       .where('name', '=', name)
+      .executeTakeFirst()
+
+    return founded != null
+  }
+
+  async isActionInUse(action: string): Promise<boolean> {
+    const founded = await this.db
+      .selectFrom('action')
+      .select('id')
+      .leftJoin('tenant', 'tenant.id', 'action.id')
+      .where('action.action', '=', action)
       .executeTakeFirst()
 
     return founded != null

@@ -15,4 +15,17 @@ export class UserRepository {
       .where('code', '=', id)
       .executeTakeFirst()
   }
+
+  async isEmailInUse(email: string): Promise<boolean> {
+    const result = await this.db
+      .selectFrom('user')
+      .select((eb) => eb.fn.count<number>('user.id').as('count'))
+      .leftJoin('tenant', 'tenant.id', 'user.tenantId')
+      .where('user.email', '=', email)
+      .executeTakeFirst()
+
+    if (result == null || result.count <= 0) return false
+
+    return true
+  }
 }

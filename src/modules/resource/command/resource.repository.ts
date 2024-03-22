@@ -23,6 +23,7 @@ export class ResourceRepository {
     const founded = await this.db
       .selectFrom('resource')
       .select('id')
+      .leftJoin('tenant', 'tenant.id', 'resource.id')
       .where('name', '=', name)
       .executeTakeFirst()
 

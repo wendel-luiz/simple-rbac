@@ -20,7 +20,8 @@ export class RoleRepository {
     const founded = await this.db
       .selectFrom('role')
       .select('id')
-      .where('name', '=', name)
+      .leftJoin('tenant', 'tenant.id', 'role.id')
+      .where('role.name', '=', name)
       .executeTakeFirst()
 
     return founded != null

@@ -23,6 +23,13 @@ export class ActionCommand {
       )
     }
 
+    const isActionUsed = await this.ActionRepo.isActionInUse(props.action)
+    if (isActionUsed) {
+      throw new ConflictException(
+        `A action identifier called "${props.action}" already exists.`,
+      )
+    }
+
     const code = generate()
     await this.ActionRepo.insert({
       ...props,
