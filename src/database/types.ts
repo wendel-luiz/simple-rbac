@@ -12,7 +12,7 @@ export interface Database {
   role: RoleTable
   resource: ResourceTable
   action: ActionTable
-  Permission: PermissionTable
+  permission: PermissionTable
 }
 
 export interface TenantTable {
@@ -72,7 +72,11 @@ export type ResourceUpdate = Updateable<ResourceTable>
 
 export interface ActionTable {
   id: Generated<number>
+  code: string
+  tenantId: number
+  action: string
   name: string
+  description: string
   createdAt: Generated<string>
   updatedAt: Generated<string>
 }
