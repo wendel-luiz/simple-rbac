@@ -15,4 +15,14 @@ export class TenantRepository {
       .where('code', '=', id)
       .executeTakeFirst()
   }
+
+  async isNameUsed(name: string): Promise<boolean> {
+    const founded = await this.db
+      .selectFrom('tenant')
+      .select('id')
+      .where('name', '=', name)
+      .executeTakeFirst()
+
+    return founded != null
+  }
 }
