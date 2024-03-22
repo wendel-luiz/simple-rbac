@@ -8,7 +8,6 @@ export class RoleQuery {
   constructor(private readonly db: Kysely<Database>) {}
 
   async getById(id: string): Query<GetRoleByIdResponse> {
-    console.log('ASDasd', id)
     const role = await this.db
       .selectFrom('role')
       .select(['code', 'name', 'description'])

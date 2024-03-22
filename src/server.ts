@@ -6,6 +6,7 @@ import { UserController } from 'modules/user/user.controller'
 import { TenantController } from 'modules/tenant/tenant.controller'
 import { errorHandler } from 'middleware/error-handler'
 import { RoleController } from 'modules/role/role.controller'
+import { ResourceController } from 'modules/resource/resource.controller'
 
 export class Server {
   private readonly _app: Application
@@ -14,6 +15,7 @@ export class Server {
   private readonly _userController: UserController
   private readonly _tenantController: TenantController
   private readonly _roleController: RoleController
+  private readonly _resourceController: ResourceController
 
   constructor() {
     this._app = express()
@@ -21,6 +23,7 @@ export class Server {
     this._userController = new UserController()
     this._tenantController = new TenantController()
     this._roleController = new RoleController()
+    this._resourceController = new ResourceController()
 
     this.configure()
     this._server = this.serve()
@@ -34,6 +37,7 @@ export class Server {
     this._app.use('/user', this._userController.getRouter())
     this._app.use('/tenant', this._tenantController.getRouter())
     this._app.use('/role', this._roleController.getRouter())
+    this._app.use('/resource', this._resourceController.getRouter())
 
     this._app.use(errorHandler)
   }

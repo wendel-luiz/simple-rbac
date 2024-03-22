@@ -58,6 +58,8 @@ export type RoleTableUpdate = Updateable<RoleTable>
 
 export interface ResourceTable {
   id: Generated<number>
+  code: string
+  tenantId: number
   name: string
   description: string
   createdAt: Generated<string>
