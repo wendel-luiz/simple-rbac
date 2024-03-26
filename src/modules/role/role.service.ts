@@ -73,6 +73,30 @@ export class RoleService {
     return role
   }
 
+  async removeUser(roleId: string, userId: string): Promise<Role> {
+    const role = await this.roleRepo.findById(roleId)
+    if (role == null) {
+      throw new NotFoundException('Role not found.')
+    }
+
+    const user = await this.userRepo.findById(userId)
+    if (user == null) {
+      throw new NotFoundException('User not found.')
+    }
+
+    if (role.tenantId !== user.tenantId) {
+      throw new ForbiddenException('Cannot add a user from different tenant.')
+    }
+
+    const userRole = await this.roleRepo.findUserRole(user.id, role.id)
+    if (userRole == null) {
+      return role
+    }
+
+    await this.roleRepo.deleteUserRole(userRole)
+    return role
+  }
+
   async addPermission(
     roleId: string,
     resourceId: string,
@@ -108,6 +132,39 @@ export class RoleService {
       roleId: role.id,
     })
 
+    return role
+  }
+
+  async removePermission(
+    roleId: string,
+    resourceId: string,
+    actionId: string,
+  ): Promise<Role> {
+    const role = await this.roleRepo.findById(roleId)
+    if (role == null) {
+      throw new NotFoundException('Role not found.')
+    }
+
+    const resource = await this.resourceRepo.findById(resourceId)
+    if (resource == null) {
+      throw new NotFoundException('Resource not found.')
+    }
+
+    const action = await this.actionRepo.findById(actionId)
+    if (action == null) {
+      throw new NotFoundException('Action not found.')
+    }
+
+    const permission = await this.roleRepo.findPermission(
+      role.id,
+      resource.id,
+      action.id,
+    )
+    if (permission == null) {
+      return role
+    }
+
+    await this.roleRepo.deletePermission(permission)
     return role
   }
 

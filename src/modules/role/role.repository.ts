@@ -5,6 +5,7 @@ import {
   type Role,
   type NewPermission,
   type Permission,
+  type UserRole,
 } from 'database/types'
 import { type Kysely } from 'kysely'
 
@@ -74,6 +75,46 @@ export class RoleRepository {
       .insertInto('permission')
       .values(permission)
       .returningAll()
+      .executeTakeFirstOrThrow()
+  }
+
+  async findUserRole(
+    userId: number,
+    roleId: number,
+  ): Promise<UserRole | undefined> {
+    return await this.db
+      .selectFrom('userRole')
+      .selectAll()
+      .where('userRole.roleId', '=', roleId)
+      .where('userRole.userId', '=', userId)
+      .executeTakeFirst()
+  }
+
+  async deleteUserRole(userRole: UserRole): Promise<void> {
+    await this.db
+      .deleteFrom('userRole')
+      .where('userRole.id', '=', userRole.id)
+      .executeTakeFirstOrThrow()
+  }
+
+  async findPermission(
+    roleId: number,
+    resourceId: number,
+    actionId: number,
+  ): Promise<Permission | undefined> {
+    return await this.db
+      .selectFrom('permission')
+      .selectAll()
+      .where('permission.roleId', '=', roleId)
+      .where('permission.resourceId', '=', resourceId)
+      .where('permission.actionId', '=', actionId)
+      .executeTakeFirst()
+  }
+
+  async deletePermission(permission: Permission): Promise<void> {
+    await this.db
+      .deleteFrom('permission')
+      .where('permission.id', '=', permission.id)
       .executeTakeFirstOrThrow()
   }
 }

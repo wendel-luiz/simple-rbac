@@ -9,6 +9,14 @@ import {
   addPermissionBodySchema,
   addPermissionParamSchema,
 } from './dtos/add-permission.dto'
+import {
+  removeUserBodySchema,
+  removeUserParamSchema,
+} from './dtos/remove-user.dto'
+import {
+  removePermissionBodySchema,
+  removePermissionParamSchema,
+} from './dtos/remove-permission.dto'
 
 export class RoleController {
   constructor(
@@ -22,17 +30,31 @@ export class RoleController {
     )
 
     this._router.post(
-      '/:roleId/add-user',
+      '/:roleId/user',
       paramParser(addUserParamSchema),
       bodyParser(addUserBodySchema),
       this._handler.addUser,
     )
 
+    this._router.delete(
+      '/:roleId/user',
+      paramParser(removeUserParamSchema),
+      bodyParser(removeUserBodySchema),
+      this._handler.removeUser,
+    )
+
     this._router.post(
-      '/:roleId/add-permission',
+      '/:roleId/permission',
       paramParser(addPermissionParamSchema),
       bodyParser(addPermissionBodySchema),
       this._handler.addPermission,
+    )
+
+    this._router.delete(
+      '/:roleId/permission',
+      paramParser(removePermissionParamSchema),
+      bodyParser(removePermissionBodySchema),
+      this._handler.removePermission,
     )
 
     this._router.get(

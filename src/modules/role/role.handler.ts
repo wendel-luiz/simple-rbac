@@ -10,6 +10,14 @@ import {
   type AddPermissionParams,
 } from './dtos/add-permission.dto'
 import { type RoleService } from './role.service'
+import {
+  type RemoveUserBody,
+  type RemoveUserParams,
+} from './dtos/remove-user.dto'
+import {
+  type RemovePermissionBody,
+  type RemovePermissionParams,
+} from './dtos/remove-permission.dto'
 
 export class RoleHandler {
   constructor(private readonly service: RoleService) {}
@@ -44,6 +52,18 @@ export class RoleHandler {
         .catch((err) => next(err))
     }
 
+  public removeUser: RequestHandler<
+    RemoveUserParams,
+    unknown,
+    RemoveUserBody,
+    unknown
+  > = (req, res, next) => {
+    this.service
+      .removeUser(req.params.roleId, req.body.userId)
+      .then(() => res.status(204).send())
+      .catch((err) => next(err))
+  }
+
   public addPermission: RequestHandler<
     AddPermissionParams,
     unknown,
@@ -58,6 +78,22 @@ export class RoleHandler {
           .setHeader('Location', '/role/' + result.code)
           .send(),
       )
+      .catch((err) => next(err))
+  }
+
+  public removePermission: RequestHandler<
+    RemovePermissionParams,
+    unknown,
+    RemovePermissionBody,
+    unknown
+  > = (req, res, next) => {
+    this.service
+      .removePermission(
+        req.params.roleId,
+        req.body.resourceId,
+        req.body.actionId,
+      )
+      .then(() => res.status(204).send())
       .catch((err) => next(err))
   }
 
