@@ -20,9 +20,13 @@ import {
 } from './dtos/remove-permission.dto'
 import { type GetUsersParams, type GetUsersQuery } from './dtos/get-users.dto'
 import {
-  type GetPermissionsParams,
-  type GetPermissionsQuery,
-} from './dtos/get-permissions.dto'
+  type GetResourcesParams,
+  type GetResourcesQuery,
+} from './dtos/get-resources.dto'
+import {
+  type GetActionsByResourceParams,
+  type GetActionsByResourceQuery,
+} from './dtos/get-actions.dto'
 
 export class RoleHandler {
   constructor(private readonly service: RoleService) {}
@@ -98,14 +102,31 @@ export class RoleHandler {
       .catch((err) => next(err))
   }
 
-  public getPermissions: RequestHandler<
-    GetPermissionsParams,
+  public getResources: RequestHandler<
+    GetResourcesParams,
     unknown,
     unknown,
-    GetPermissionsQuery
+    GetResourcesQuery
   > = (req, res, next) => {
     this.service
-      .getPermissions(req.params.roleId, req.query.page, req.query.take)
+      .getResources(req.params.roleId, req.query.page, req.query.take)
+      .then((result) => res.status(201).json(result))
+      .catch((err) => next(err))
+  }
+
+  public getActionsByResource: RequestHandler<
+    GetActionsByResourceParams,
+    unknown,
+    unknown,
+    GetActionsByResourceQuery
+  > = (req, res, next) => {
+    this.service
+      .getActionsByResource(
+        req.params.roleId,
+        req.params.resourceId,
+        req.query.page,
+        req.query.take,
+      )
       .then((result) => res.status(201).json(result))
       .catch((err) => next(err))
   }

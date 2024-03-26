@@ -12,6 +12,8 @@ import { type ActionRepository } from 'modules/action/action.repository'
 import { type Role } from 'database/types'
 import { type GetRoleByIdResponse } from './dtos/get-by-id'
 import { type CreateRoleBody } from './dtos/create-role.dto'
+import { type GetResourcesResponse } from './dtos/get-resources.dto'
+import { type GetActionsByResourceResponse } from './dtos/get-actions.dto'
 
 export class RoleService {
   constructor(
@@ -156,19 +158,46 @@ export class RoleService {
     return role
   }
 
-  async getPermissions(
+  async getResources(
     roleId: string,
     page?: number,
     take?: number,
-  ): Promise<unknown> {
+  ): Promise<GetResourcesResponse> {
     const role = await this.roleRepo.findById(roleId)
     if (role == null) {
       throw new NotFoundException('Role not found.')
     }
 
-    const result = await this.roleRepo.getPermissions({
+    const result = await this.roleRepo.findResources({
       params: {
         roleId: role.id,
+      },
+      page,
+      take,
+    })
+
+    return result
+  }
+
+  async getActionsByResource(
+    roleId: string,
+    resourceId: string,
+    page?: number,
+    take?: number,
+  ): Promise<GetActionsByResourceResponse> {
+    const role = await this.roleRepo.findById(roleId)
+    if (role == null) {
+      throw new NotFoundException('Role not found.')
+    }
+
+    const resource = await this.resourceRepo.findById(resourceId)
+    if (resource == null) {
+      throw new NotFoundException('Resource not found.')
+    }
+
+    const result = await this.roleRepo.findActionsByResource({
+      params: {
+        resourceId: resource.id,
       },
       page,
       take,

@@ -23,9 +23,13 @@ import {
 import { queryParser } from 'middleware/query-parser'
 import { getUsersParamsSchema, getUsersQuerySchema } from './dtos/get-users.dto'
 import {
-  getPermissionsParamsSchema,
-  getPermissionsQuerySchema,
-} from './dtos/get-permissions.dto'
+  getResourcesParamsSchema,
+  getResourcesQuerySchema,
+} from './dtos/get-resources.dto'
+import {
+  getActionsByResourceParamsSchema,
+  getActionsByResourceQuerySchema,
+} from './dtos/get-actions.dto'
 
 export class RoleController {
   private readonly _router: Router
@@ -69,10 +73,17 @@ export class RoleController {
     )
 
     this._router.get(
-      '/:roleId/permissions',
-      paramParser(getPermissionsParamsSchema),
-      queryParser(getPermissionsQuerySchema),
-      this._handler.getPermissions,
+      '/:roleId/resources',
+      paramParser(getResourcesParamsSchema),
+      queryParser(getResourcesQuerySchema),
+      this._handler.getResources,
+    )
+
+    this._router.get(
+      '/:roleId/resource/:resourceId/actions',
+      paramParser(getActionsByResourceParamsSchema),
+      queryParser(getActionsByResourceQuerySchema),
+      this._handler.getActionsByResource,
     )
 
     this._router.delete(
