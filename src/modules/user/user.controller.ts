@@ -1,4 +1,4 @@
-import { type Router } from 'express'
+import express, { type Router } from 'express'
 import { paramParser } from 'middleware/param-parser'
 import { bodyParser } from 'middleware/body-parser'
 import { type UserHandler } from './user.handler'
@@ -11,10 +11,10 @@ import { loginBodySchema } from './dtos/login.dto'
 import { validateTokenBodySchema } from './dtos/validate-token.dto'
 
 export class UserController {
-  constructor(
-    private readonly _handler: UserHandler,
-    private readonly _router: Router,
-  ) {
+  private readonly _router: Router
+
+  constructor(private readonly _handler: UserHandler) {
+    this._router = express.Router()
     this._router.post(
       '/tenant/:tenantId',
       paramParser(createUserParamSchema),

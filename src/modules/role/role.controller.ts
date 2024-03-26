@@ -1,8 +1,11 @@
-import { type Router } from 'express'
+import express, { type Router } from 'express'
 import { bodyParser } from 'middleware/body-parser'
 import { paramParser } from 'middleware/param-parser'
 import { type RoleHandler } from './role.handler'
-import { createRoleBodySchema } from './dtos/create-role.dto'
+import {
+  createRoleBodySchema,
+  createRoleParamSchema,
+} from './dtos/create-role.dto'
 import { getRoleByIdParamsSchema } from './dtos/get-by-id'
 import { addUserBodySchema, addUserParamSchema } from './dtos/add-user.dto'
 import {
@@ -17,15 +20,19 @@ import {
   removePermissionBodySchema,
   removePermissionParamSchema,
 } from './dtos/remove-permission.dto'
+import { queryParser } from 'middleware/query-parser'
+import { getUsersParamsSchema, getUsersQuerySchema } from './dtos/get-users.dto'
 
 export class RoleController {
-  constructor(
-    private readonly _handler: RoleHandler,
-    private readonly _router: Router,
-  ) {
+  private readonly _router: Router
+
+  constructor(private readonly _handler: RoleHandler) {
+    this._router = express.Router()
+
     this._router.post(
       '/tenant/:tenantId',
       bodyParser(createRoleBodySchema),
+      paramParser(createRoleParamSchema),
       this._handler.createRole,
     )
 
@@ -34,6 +41,13 @@ export class RoleController {
       paramParser(addUserParamSchema),
       bodyParser(addUserBodySchema),
       this._handler.addUser,
+    )
+
+    this._router.get(
+      '/:roleId/users',
+      paramParser(getUsersParamsSchema),
+      queryParser(getUsersQuerySchema),
+      this._handler.getUsers,
     )
 
     this._router.delete(

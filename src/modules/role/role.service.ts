@@ -73,6 +73,27 @@ export class RoleService {
     return role
   }
 
+  async getUsers(
+    roleId: string,
+    page?: number,
+    take?: number,
+  ): Promise<unknown> {
+    const role = await this.roleRepo.findById(roleId)
+    if (role == null) {
+      throw new NotFoundException('Role not found.')
+    }
+
+    const result = await this.roleRepo.getUsers({
+      params: {
+        roleId: role.id,
+      },
+      page,
+      take,
+    })
+
+    return result
+  }
+
   async removeUser(roleId: string, userId: string): Promise<Role> {
     const role = await this.roleRepo.findById(roleId)
     if (role == null) {

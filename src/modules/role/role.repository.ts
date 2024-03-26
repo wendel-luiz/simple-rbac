@@ -8,6 +8,8 @@ import {
   type UserRole,
 } from 'database/types'
 import { type Kysely } from 'kysely'
+import { type Paginated } from 'lib/paginated'
+import { type GetUsersResponse } from './dtos/get-users.dto'
 
 export class RoleRepository {
   constructor(private readonly db: Kysely<Database>) {}
@@ -116,5 +118,49 @@ export class RoleRepository {
       .deleteFrom('permission')
       .where('permission.id', '=', permission.id)
       .executeTakeFirstOrThrow()
+  }
+
+  async getUsers(
+    params: Paginated<{ roleId: number }>,
+  ): Promise<GetUsersResponse> {
+    const take = params.take ?? 10
+    const page = params.page ?? 1
+
+    const skip = take * (page - 1)
+
+    const query = this.db
+      .selectFrom('userRole')
+      .leftJoin('user', 'user.id', 'userRole.userId')
+      .select([
+        'userRole.id',
+        'userRole.roleId',
+        'user.email',
+        'user.code',
+        'userRole.createdAt',
+      ])
+      .offset(skip)
+      .limit(take)
+      .where('userRole.roleId', '=', params.params.roleId)
+
+    const [data, count] = await Promise.all([
+      query.execute(),
+      query
+        .clearSelect()
+        .select((eb) => eb.fn.count<number>('userRole.id').as('total'))
+        .executeTakeFirst(),
+    ])
+
+    const total = count?.total ?? 0
+
+    return {
+      page,
+      pages: total / page,
+      length: data.length,
+      items: data.map((user) => ({
+        id: user.code ?? '',
+        email: user.email ?? '',
+        addedAt: user.createdAt,
+      })),
+    }
   }
 }

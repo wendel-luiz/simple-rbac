@@ -18,6 +18,7 @@ import {
   type RemovePermissionBody,
   type RemovePermissionParams,
 } from './dtos/remove-permission.dto'
+import { type GetUsersParams, type GetUsersQuery } from './dtos/get-users.dto'
 
 export class RoleHandler {
   constructor(private readonly service: RoleService) {}
@@ -51,6 +52,18 @@ export class RoleHandler {
         )
         .catch((err) => next(err))
     }
+
+  public getUsers: RequestHandler<
+    GetUsersParams,
+    unknown,
+    unknown,
+    GetUsersQuery
+  > = (req, res, next) => {
+    this.service
+      .getUsers(req.params.roleId, req.query.page, req.query.take)
+      .then((result) => res.status(201).json(result))
+      .catch((err) => next(err))
+  }
 
   public removeUser: RequestHandler<
     RemoveUserParams,
