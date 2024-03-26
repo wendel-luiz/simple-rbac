@@ -10,14 +10,6 @@ export class TenantController {
     private readonly _handler: TenantHandler,
     private readonly _router: Router,
   ) {
-    this.buildRoutes()
-  }
-
-  public getRouter(): Router {
-    return this._router
-  }
-
-  private buildRoutes(): void {
     this._router.post(
       '/',
       bodyParser(createTenantBodySchema),
@@ -29,5 +21,9 @@ export class TenantController {
       paramParser(getTenantByIdParamsSchema),
       this._handler.getTenantById,
     )
+  }
+
+  public getRouter(): Router {
+    return this._router
   }
 }

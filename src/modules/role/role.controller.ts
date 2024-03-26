@@ -15,14 +15,6 @@ export class RoleController {
     private readonly _handler: RoleHandler,
     private readonly _router: Router,
   ) {
-    this.buildRoutes()
-  }
-
-  public getRouter(): Router {
-    return this._router
-  }
-
-  private buildRoutes(): void {
     this._router.post(
       '/tenant/:tenantId',
       bodyParser(createRoleBodySchema),
@@ -48,5 +40,9 @@ export class RoleController {
       paramParser(getRoleByIdParamsSchema),
       this._handler.getRoleById,
     )
+  }
+
+  public getRouter(): Router {
+    return this._router
   }
 }

@@ -10,14 +10,6 @@ export class ActionController {
     private readonly _handler: ActionHandler,
     private readonly _router: Router,
   ) {
-    this.buildRoutes()
-  }
-
-  public getRouter(): Router {
-    return this._router
-  }
-
-  private buildRoutes(): void {
     this._router.post(
       '/tenant/:tenantId',
       bodyParser(createActionBodySchema),
@@ -29,5 +21,9 @@ export class ActionController {
       paramParser(getActionByIdParamsSchema),
       this._handler.getActionById,
     )
+  }
+
+  public getRouter(): Router {
+    return this._router
   }
 }

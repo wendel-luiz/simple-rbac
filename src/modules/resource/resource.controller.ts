@@ -10,14 +10,6 @@ export class ResourceController {
     private readonly _handler: ResourceHandler,
     private readonly _router: Router,
   ) {
-    this.buildRoutes()
-  }
-
-  public getRouter(): Router {
-    return this._router
-  }
-
-  private buildRoutes(): void {
     this._router.post(
       '/tenant/:tenantId',
       bodyParser(createResourceBodySchema),
@@ -29,5 +21,9 @@ export class ResourceController {
       paramParser(getResourceByIdParamsSchema),
       this._handler.getResourceById,
     )
+  }
+
+  public getRouter(): Router {
+    return this._router
   }
 }

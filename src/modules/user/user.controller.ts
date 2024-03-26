@@ -15,14 +15,6 @@ export class UserController {
     private readonly _handler: UserHandler,
     private readonly _router: Router,
   ) {
-    this.buildRoutes()
-  }
-
-  public getRouter(): Router {
-    return this._router
-  }
-
-  private buildRoutes(): void {
     this._router.post(
       '/tenant/:tenantId',
       paramParser(createUserParamSchema),
@@ -47,5 +39,9 @@ export class UserController {
       bodyParser(validateTokenBodySchema),
       this._handler.validateTokenUser,
     )
+  }
+
+  public getRouter(): Router {
+    return this._router
   }
 }
