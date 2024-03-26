@@ -1,7 +1,7 @@
 import { type Router } from 'express'
 import { paramParser } from 'middleware/param-parser'
 import { bodyParser } from 'middleware/body-parser'
-import { type UserHandler } from './user.handlers'
+import { type UserHandler } from './user.handler'
 import {
   createUserBodySchema,
   createUserParamSchema,
