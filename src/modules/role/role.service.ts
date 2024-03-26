@@ -156,6 +156,27 @@ export class RoleService {
     return role
   }
 
+  async getPermissions(
+    roleId: string,
+    page?: number,
+    take?: number,
+  ): Promise<unknown> {
+    const role = await this.roleRepo.findById(roleId)
+    if (role == null) {
+      throw new NotFoundException('Role not found.')
+    }
+
+    const result = await this.roleRepo.getPermissions({
+      params: {
+        roleId: role.id,
+      },
+      page,
+      take,
+    })
+
+    return result
+  }
+
   async removePermission(
     roleId: string,
     resourceId: string,

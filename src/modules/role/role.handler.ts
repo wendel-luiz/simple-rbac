@@ -19,6 +19,10 @@ import {
   type RemovePermissionParams,
 } from './dtos/remove-permission.dto'
 import { type GetUsersParams, type GetUsersQuery } from './dtos/get-users.dto'
+import {
+  type GetPermissionsParams,
+  type GetPermissionsQuery,
+} from './dtos/get-permissions.dto'
 
 export class RoleHandler {
   constructor(private readonly service: RoleService) {}
@@ -91,6 +95,18 @@ export class RoleHandler {
           .setHeader('Location', '/role/' + result.code)
           .send(),
       )
+      .catch((err) => next(err))
+  }
+
+  public getPermissions: RequestHandler<
+    GetPermissionsParams,
+    unknown,
+    unknown,
+    GetPermissionsQuery
+  > = (req, res, next) => {
+    this.service
+      .getPermissions(req.params.roleId, req.query.page, req.query.take)
+      .then((result) => res.status(201).json(result))
       .catch((err) => next(err))
   }
 

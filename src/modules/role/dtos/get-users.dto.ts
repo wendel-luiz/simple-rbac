@@ -17,5 +17,5 @@ export interface GetUsersResponse
   extends PaginatedResponse<{
     id: string
     email: string
-    addedAt: string
+    createdAt: string
   }> {}

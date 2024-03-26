@@ -10,6 +10,8 @@ import {
 import { type Kysely } from 'kysely'
 import { type Paginated } from 'lib/paginated'
 import { type GetUsersResponse } from './dtos/get-users.dto'
+import { type GetPermissionsResponse } from './dtos/get-permissions.dto'
+import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/postgres'
 
 export class RoleRepository {
   constructor(private readonly db: Kysely<Database>) {}
@@ -159,7 +161,67 @@ export class RoleRepository {
       items: data.map((user) => ({
         id: user.code ?? '',
         email: user.email ?? '',
-        addedAt: user.createdAt,
+        createdAt: user.createdAt,
+      })),
+    }
+  }
+
+  async getPermissions(
+    params: Paginated<{ roleId: number }>,
+  ): Promise<GetPermissionsResponse> {
+    const take = params.take ?? 10
+    const page = params.page ?? 1
+
+    const skip = take * (page - 1)
+
+    const query = this.db
+      .selectFrom('permission')
+      .selectAll()
+      .select((eb) => [
+        jsonObjectFrom(
+          eb
+            .selectFrom('resource')
+            .select(['resource.code', 'resource.name', 'resource.description'])
+            .whereRef('resource.id', '=', 'permission.resourceId'),
+        ).as('resource'),
+        jsonArrayFrom(
+          eb
+            .selectFrom('action')
+            .select(['action.code', 'action.name', 'action.description'])
+            .whereRef('action.id', '=', 'permission.actionId'),
+        ).as('actions'),
+      ])
+      .offset(skip)
+      .limit(take)
+      .where('permission.roleId', '=', params.params.roleId)
+
+    const [data, count] = await Promise.all([
+      query.execute(),
+      query
+        .clearSelect()
+        .select((eb) => eb.fn.count<number>('permission.id').as('total'))
+        .groupBy('permission.id')
+        .executeTakeFirst(),
+    ])
+
+    const total = count?.total ?? 0
+
+    return {
+      page,
+      pages: total / page,
+      length: data.length,
+      items: data.map((permission) => ({
+        createdAt: permission.createdAt,
+        resource: {
+          id: permission.resource?.code ?? '',
+          name: permission.resource?.name ?? '',
+          description: permission.resource?.description ?? '',
+        },
+        actions: permission.actions.map((action) => ({
+          id: action.code,
+          name: action.name,
+          description: action.description,
+        })),
       })),
     }
   }

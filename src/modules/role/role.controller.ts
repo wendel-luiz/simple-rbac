@@ -22,6 +22,10 @@ import {
 } from './dtos/remove-permission.dto'
 import { queryParser } from 'middleware/query-parser'
 import { getUsersParamsSchema, getUsersQuerySchema } from './dtos/get-users.dto'
+import {
+  getPermissionsParamsSchema,
+  getPermissionsQuerySchema,
+} from './dtos/get-permissions.dto'
 
 export class RoleController {
   private readonly _router: Router
@@ -62,6 +66,13 @@ export class RoleController {
       paramParser(addPermissionParamSchema),
       bodyParser(addPermissionBodySchema),
       this._handler.addPermission,
+    )
+
+    this._router.get(
+      '/:roleId/permissions',
+      paramParser(getPermissionsParamsSchema),
+      queryParser(getPermissionsQuerySchema),
+      this._handler.getPermissions,
     )
 
     this._router.delete(
