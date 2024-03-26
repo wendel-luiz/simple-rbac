@@ -1,7 +1,7 @@
-import express, { type Router } from 'express'
+import { type Router } from 'express'
 import { bodyParser } from 'middleware/body-parser'
 import { paramParser } from 'middleware/param-parser'
-import { RoleHandler } from './role.handler'
+import { type RoleHandler } from './role.handler'
 import { createRoleBodySchema } from './command/dtos/create-role.dto'
 import { getRoleByIdParamsSchema } from './query/dtos/get-by-id'
 import {
@@ -14,12 +14,10 @@ import {
 } from './command/dtos/add-permission.dto'
 
 export class RoleController {
-  private readonly _handler: RoleHandler
-  private readonly _router: Router
-
-  constructor() {
-    this._handler = new RoleHandler()
-    this._router = express.Router()
+  constructor(
+    private readonly _handler: RoleHandler,
+    private readonly _router: Router,
+  ) {
     this.buildRoutes()
   }
 

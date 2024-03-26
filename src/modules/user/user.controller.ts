@@ -1,7 +1,7 @@
-import express, { type Router } from 'express'
+import { type Router } from 'express'
 import { paramParser } from 'middleware/param-parser'
 import { bodyParser } from 'middleware/body-parser'
-import { UserHandler } from './user.handlers'
+import { type UserHandler } from './user.handlers'
 import {
   createUserBodySchema,
   createUserParamSchema,
@@ -11,13 +11,10 @@ import { loginBodySchema } from './commands/dtos/login.dto'
 import { validateTokenBodySchema } from './commands/dtos/validate-token.dto'
 
 export class UserController {
-  private readonly _router: Router
-  private readonly _handler: UserHandler
-
-  constructor() {
-    this._router = express.Router()
-    this._handler = new UserHandler()
-
+  constructor(
+    private readonly _handler: UserHandler,
+    private readonly _router: Router,
+  ) {
     this.buildRoutes()
   }
 

@@ -1,10 +1,12 @@
-import { Server } from 'server'
+import { server } from 'config/di-container'
 
-let server
-
-try {
-  server = new Server()
-} catch (err) {
-  console.error(err)
-  server?.destroy()
+async function init(): Promise<void> {
+  try {
+    server.serve()
+  } catch (err) {
+    console.error(err)
+    server.destroy()
+  }
 }
+
+void init()

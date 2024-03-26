@@ -1,17 +1,15 @@
-import express, { type Router } from 'express'
-import { ResourceHandler } from './resource.handler'
+import { type Router } from 'express'
+import { type ResourceHandler } from './resource.handler'
 import { createResourceBodySchema } from './command/dtos/create-resource.dto'
 import { getResourceByIdParamsSchema } from './query/dtos/get-by-id.dto'
 import { bodyParser } from 'middleware/body-parser'
 import { paramParser } from 'middleware/param-parser'
 
 export class ResourceController {
-  private readonly _handler: ResourceHandler
-  private readonly _router: Router
-
-  constructor() {
-    this._handler = new ResourceHandler()
-    this._router = express.Router()
+  constructor(
+    private readonly _handler: ResourceHandler,
+    private readonly _router: Router,
+  ) {
     this.buildRoutes()
   }
 

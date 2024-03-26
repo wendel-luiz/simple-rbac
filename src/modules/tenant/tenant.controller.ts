@@ -1,17 +1,15 @@
-import express, { type Router } from 'express'
+import { type Router } from 'express'
 import { bodyParser } from 'middleware/body-parser'
-import { TenantHandler } from './tenant.handlers'
+import { type TenantHandler } from './tenant.handlers'
 import { createTenantBodySchema } from './commands/dtos/create-tenant.dto'
 import { paramParser } from 'middleware/param-parser'
 import { getTenantByIdParamsSchema } from './queries/dtos/get-by-id.dto'
 
 export class TenantController {
-  private readonly _handler: TenantHandler
-  private readonly _router: Router
-
-  constructor() {
-    this._handler = new TenantHandler()
-    this._router = express.Router()
+  constructor(
+    private readonly _handler: TenantHandler,
+    private readonly _router: Router,
+  ) {
     this.buildRoutes()
   }
 

@@ -1,8 +1,5 @@
-import { TenantRepository } from 'modules/tenant/commands/tenant.repository'
-import { ActionCommand } from './command/action.command'
-import { ActionRepository } from './command/action.repository'
-import { ActionQuery } from './query/action.query'
-import { db } from 'database/connection'
+import { type ActionCommand } from './command/action.command'
+import { type ActionQuery } from './query/action.query'
 import { type RequestHandler } from 'express'
 import {
   type CreateActionBody,
@@ -11,16 +8,10 @@ import {
 import { type GetActionByIdParams } from './query/dtos/get-by-id.dto'
 
 export class ActionHandler {
-  private readonly command: ActionCommand
-  private readonly query: ActionQuery
-
-  constructor() {
-    this.command = new ActionCommand(
-      new ActionRepository(db),
-      new TenantRepository(db),
-    )
-    this.query = new ActionQuery(db)
-  }
+  constructor(
+    private readonly command: ActionCommand,
+    private readonly query: ActionQuery,
+  ) {}
 
   public createAction: RequestHandler<
     CreateActionParams,

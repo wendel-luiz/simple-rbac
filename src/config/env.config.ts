@@ -31,7 +31,6 @@ class Environment {
     })
 
     if (!values.success) {
-      console.error(values.error)
       throw new InvalidEnvFileException()
     }
 

@@ -2,35 +2,26 @@ import express, { type Application } from 'express'
 import cors from 'cors'
 import { env } from 'config/env.config'
 import type http from 'http'
-import { UserController } from 'modules/user/user.controller'
-import { TenantController } from 'modules/tenant/tenant.controller'
+import { type UserController } from 'modules/user/user.controller'
+import { type TenantController } from 'modules/tenant/tenant.controller'
 import { errorHandler } from 'middleware/error-handler'
-import { RoleController } from 'modules/role/role.controller'
-import { ResourceController } from 'modules/resource/resource.controller'
-import { ActionController } from 'modules/action/action.controller'
+import { type RoleController } from 'modules/role/role.controller'
+import { type ResourceController } from 'modules/resource/resource.controller'
+import { type ActionController } from 'modules/action/action.controller'
 
 export class Server {
   private readonly _app: Application
-  private readonly _server: http.Server
+  private _server: http.Server | undefined
 
-  private readonly _userController: UserController
-  private readonly _tenantController: TenantController
-  private readonly _roleController: RoleController
-  private readonly _resourceController: ResourceController
-  private readonly _actionController: ActionController
-
-  constructor() {
+  constructor(
+    private readonly _userController: UserController,
+    private readonly _tenantController: TenantController,
+    private readonly _roleController: RoleController,
+    private readonly _resourceController: ResourceController,
+    private readonly _actionController: ActionController,
+  ) {
     this._app = express()
-
-    this._userController = new UserController()
-    this._tenantController = new TenantController()
-    this._roleController = new RoleController()
-    this._resourceController = new ResourceController()
-    this._actionController = new ActionController()
-
     this.configure()
-
-    this._server = this.serve()
   }
 
   private configure(): void {
@@ -47,13 +38,13 @@ export class Server {
     this._app.use(errorHandler)
   }
 
-  private serve(): http.Server {
-    return this._app.listen(env.SERVER_PORT, () => {
+  public serve(): void {
+    this._server = this._app.listen(env.SERVER_PORT, () => {
       console.info(`Server listening on port ${env.SERVER_PORT}`)
     })
   }
 
   public destroy(): void {
-    this._server.close()
+    this._server?.close()
   }
 }

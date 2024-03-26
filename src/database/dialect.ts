@@ -1,9 +1,8 @@
 import { Pool } from 'pg'
-import { Kysely, PostgresDialect } from 'kysely'
-import { type Database } from './types'
+import { PostgresDialect } from 'kysely'
 import { env } from 'config/env.config'
 
-const dialect = new PostgresDialect({
+export const dialect = new PostgresDialect({
   pool: new Pool({
     database: env.DB_DATABASE,
     host: env.DB_HOST,
@@ -12,8 +11,4 @@ const dialect = new PostgresDialect({
     password: env.DB_PASSWORD,
     max: 10,
   }),
-})
-
-export const db = new Kysely<Database>({
-  dialect,
 })

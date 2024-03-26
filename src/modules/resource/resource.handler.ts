@@ -1,8 +1,5 @@
-import { TenantRepository } from 'modules/tenant/commands/tenant.repository'
-import { ResourceCommand } from './command/resource.command'
-import { ResourceRepository } from './command/resource.repository'
-import { ResourceQuery } from './query/resource.query'
-import { db } from 'database/connection'
+import { type ResourceCommand } from './command/resource.command'
+import { type ResourceQuery } from './query/resource.query'
 import { type RequestHandler } from 'express'
 import {
   type CreateResourceBody,
@@ -11,16 +8,10 @@ import {
 import { type GetResourceByIdParams } from './query/dtos/get-by-id.dto'
 
 export class ResourceHandler {
-  private readonly command: ResourceCommand
-  private readonly query: ResourceQuery
-
-  constructor() {
-    this.command = new ResourceCommand(
-      new ResourceRepository(db),
-      new TenantRepository(db),
-    )
-    this.query = new ResourceQuery(db)
-  }
+  constructor(
+    private readonly command: ResourceCommand,
+    private readonly query: ResourceQuery,
+  ) {}
 
   public createResource: RequestHandler<
     CreateResourceParams,
