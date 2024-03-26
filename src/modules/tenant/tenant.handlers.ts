@@ -1,14 +1,10 @@
-import { type TenantCommand } from './commands/tenant.commands'
-import { type CreateTenantBody } from './commands/dtos/create-tenant.dto'
+import { type CreateTenantBody } from './dtos/create-tenant.dto'
 import { type RequestHandler } from 'express'
-import { type GetTenantByIdParams } from './queries/dtos/get-by-id.dto'
-import { type TenantQuery } from './queries/tenant.queries'
+import { type GetTenantByIdParams } from './dtos/get-by-id.dto'
+import { type TenantService } from './tenant.service'
 
 export class TenantHandler {
-  constructor(
-    private readonly command: TenantCommand,
-    private readonly query: TenantQuery,
-  ) {}
+  constructor(private readonly service: TenantService) {}
 
   public createTenant: RequestHandler<
     unknown,
@@ -16,12 +12,12 @@ export class TenantHandler {
     CreateTenantBody,
     unknown
   > = (req, res, next) => {
-    this.command
+    this.service
       .create(req.body)
       .then((result) =>
         res
           .status(201)
-          .setHeader('Location', '/tenant/' + result)
+          .setHeader('Location', '/tenant/' + result.code)
           .send(),
       )
       .catch((err) => next(err))
@@ -33,7 +29,7 @@ export class TenantHandler {
     unknown,
     unknown
   > = (req, res, next) => {
-    this.query
+    this.service
       .getById(req.params.tenantId)
       .then((result) => res.status(200).json(result))
       .catch((err) => next(err))

@@ -4,14 +4,19 @@ import {
   type NewRoleTable,
   type Role,
   type NewPermission,
+  type Permission,
 } from 'database/types'
 import { type Kysely } from 'kysely'
 
 export class RoleRepository {
   constructor(private readonly db: Kysely<Database>) {}
 
-  async insert(role: NewRoleTable): Promise<void> {
-    await this.db.insertInto('role').values(role).executeTakeFirstOrThrow()
+  async insert(role: NewRoleTable): Promise<Role> {
+    return await this.db
+      .insertInto('role')
+      .values(role)
+      .returningAll()
+      .executeTakeFirstOrThrow()
   }
 
   async findById(id: string): Promise<Role | undefined> {
@@ -64,7 +69,11 @@ export class RoleRepository {
     return result != null
   }
 
-  async addPermission(permission: NewPermission): Promise<void> {
-    await this.db.insertInto('permission').values(permission).executeTakeFirst()
+  async addPermission(permission: NewPermission): Promise<Permission> {
+    return await this.db
+      .insertInto('permission')
+      .values(permission)
+      .returningAll()
+      .executeTakeFirstOrThrow()
   }
 }

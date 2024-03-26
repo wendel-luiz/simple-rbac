@@ -2,18 +2,14 @@ import { type RequestHandler } from 'express'
 import {
   type CreateUserBody,
   type CreateUserParams,
-} from './commands/dtos/create-user.dto'
-import { type UserCommand } from './commands/user.commands'
-import { type GetUserByIdParams } from './queries/dtos/get-by-id.dto'
-import { type UserQuery } from './queries/user.queries'
-import { type LoginBody } from './commands/dtos/login.dto'
-import { type ValidateTokenBody } from './commands/dtos/validate-token.dto'
+} from './dtos/create-user.dto'
+import { type GetUserByIdParams } from './dtos/get-by-id.dto'
+import { type LoginBody } from './dtos/login.dto'
+import { type ValidateTokenBody } from './dtos/validate-token.dto'
+import { type UserService } from './user.service'
 
 export class UserHandler {
-  constructor(
-    private readonly command: UserCommand,
-    private readonly query: UserQuery,
-  ) {}
+  constructor(private readonly service: UserService) {}
 
   public createUser: RequestHandler<
     CreateUserParams,
@@ -21,12 +17,12 @@ export class UserHandler {
     CreateUserBody,
     unknown
   > = (req, res, next) => {
-    this.command
+    this.service
       .create(req.params.tenantId, req.body)
       .then((result) =>
         res
           .status(201)
-          .setHeader('Location', '/user/' + result)
+          .setHeader('Location', '/user/' + result.code)
           .send(),
       )
       .catch((err) => next(err))
@@ -37,7 +33,7 @@ export class UserHandler {
     res,
     next,
   ) => {
-    this.command
+    this.service
       .login(req.body.email, req.body.password, req.body.tenantId)
       .then((result) =>
         res.status(201).json({
@@ -53,7 +49,7 @@ export class UserHandler {
     ValidateTokenBody,
     unknown
   > = (req, res, next) => {
-    this.command
+    this.service
       .isTokenValid(req.body.token)
       .then((result) =>
         res.status(201).json({
@@ -69,7 +65,7 @@ export class UserHandler {
     unknown,
     unknown
   > = (req, res, next) => {
-    this.query
+    this.service
       .getById(req.params.userId)
       .then((result) => res.status(200).json(result))
       .catch((err) => next(err))

@@ -1,6 +1,5 @@
-import { type TenantRepository } from 'modules/tenant/commands/tenant.repository'
+import { type TenantRepository } from 'modules/tenant/tenant.repository'
 import { type UserRepository } from './user.repository'
-import { type CreateUserBody } from './dtos/create-user.dto'
 import {
   BadCredentialsException,
   BadRequestException,
@@ -8,19 +7,21 @@ import {
   NotFoundException,
 } from 'lib/exceptions'
 import { generate } from 'short-uuid'
-import { type Command } from 'lib/response'
+import { addDays } from 'date-fns'
+import { type User } from 'database/types'
+import { type GetUserByIdResponse } from './dtos/get-by-id.dto'
+import { type CreateUserBody } from './dtos/create-user.dto'
 import { isPasswordStrong } from './utils/password-validator'
 import { hashPassword, isPasswordEqual } from './utils/crypto-password'
 import { generateJWT, validateJWT } from './utils/jwt'
-import { addDays } from 'date-fns'
 
-export class UserCommand {
+export class UserService {
   constructor(
     private readonly userRepo: UserRepository,
     private readonly tenantRepo: TenantRepository,
   ) {}
 
-  async create(tenantId: string, props: CreateUserBody): Command {
+  async create(tenantId: string, props: CreateUserBody): Promise<User> {
     const tenant = await this.tenantRepo.findById(tenantId)
     if (tenant == null) {
       throw new NotFoundException('Tenant not found.')
@@ -39,17 +40,21 @@ export class UserCommand {
     const hash = hashPassword(props.password)
 
     const code = generate()
-    await this.userRepo.insert({
+    const newUser = await this.userRepo.insert({
       ...props,
       password: hash,
       tenantId: tenant.id,
       code,
     })
 
-    return code
+    return newUser
   }
 
-  async login(email: string, password: string, tenantId: string): Command {
+  async login(
+    email: string,
+    password: string,
+    tenantId: string,
+  ): Promise<string> {
     const user = await this.userRepo.findByEmailAndTenant(email, tenantId)
     if (user == null) {
       throw new BadCredentialsException('Wrong credentials.')
@@ -67,5 +72,18 @@ export class UserCommand {
   async isTokenValid(token: string): Promise<boolean> {
     const isValid = await validateJWT(token)
     return isValid
+  }
+
+  async getById(id: string): Promise<GetUserByIdResponse> {
+    const user = await this.userRepo.findById(id)
+
+    if (user == null) {
+      throw new NotFoundException('User not found.')
+    }
+
+    return {
+      id: user.code,
+      email: user.email,
+    }
   }
 }

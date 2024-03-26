@@ -4,10 +4,11 @@ import { type Kysely } from 'kysely'
 export class ResourceRepository {
   constructor(private readonly db: Kysely<Database>) {}
 
-  async insert(Resource: NewResource): Promise<void> {
-    await this.db
+  async insert(Resource: NewResource): Promise<Resource> {
+    return await this.db
       .insertInto('resource')
       .values(Resource)
+      .returningAll()
       .executeTakeFirstOrThrow()
   }
 

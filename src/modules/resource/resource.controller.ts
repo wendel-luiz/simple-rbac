@@ -1,7 +1,7 @@
 import { type Router } from 'express'
 import { type ResourceHandler } from './resource.handler'
-import { createResourceBodySchema } from './command/dtos/create-resource.dto'
-import { getResourceByIdParamsSchema } from './query/dtos/get-by-id.dto'
+import { createResourceBodySchema } from './dtos/create-resource.dto'
+import { getResourceByIdParamsSchema } from './dtos/get-by-id.dto'
 import { bodyParser } from 'middleware/body-parser'
 import { paramParser } from 'middleware/param-parser'
 

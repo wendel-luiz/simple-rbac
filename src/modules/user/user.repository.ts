@@ -4,8 +4,12 @@ import { type Kysely } from 'kysely'
 export class UserRepository {
   constructor(private readonly db: Kysely<Database>) {}
 
-  async insert(user: NewUser): Promise<void> {
-    await this.db.insertInto('user').values(user).executeTakeFirstOrThrow()
+  async insert(user: NewUser): Promise<User> {
+    return await this.db
+      .insertInto('user')
+      .values(user)
+      .returningAll()
+      .executeTakeFirstOrThrow()
   }
 
   async findById(id: string): Promise<User | undefined> {

@@ -1,17 +1,13 @@
-import { type ResourceCommand } from './command/resource.command'
-import { type ResourceQuery } from './query/resource.query'
 import { type RequestHandler } from 'express'
 import {
   type CreateResourceBody,
   type CreateResourceParams,
-} from './command/dtos/create-resource.dto'
-import { type GetResourceByIdParams } from './query/dtos/get-by-id.dto'
+} from './dtos/create-resource.dto'
+import { type GetResourceByIdParams } from './dtos/get-by-id.dto'
+import { type ResourceService } from './resource.service'
 
 export class ResourceHandler {
-  constructor(
-    private readonly command: ResourceCommand,
-    private readonly query: ResourceQuery,
-  ) {}
+  constructor(private readonly service: ResourceService) {}
 
   public createResource: RequestHandler<
     CreateResourceParams,
@@ -19,12 +15,12 @@ export class ResourceHandler {
     CreateResourceBody,
     unknown
   > = (req, res, next) => {
-    this.command
+    this.service
       .create(req.params.tenantId, req.body)
       .then((result) =>
         res
           .status(201)
-          .setHeader('Location', '/resource/' + result)
+          .setHeader('Location', '/resource/' + result.code)
           .send(),
       )
       .catch((err) => next(err))
@@ -36,7 +32,7 @@ export class ResourceHandler {
     unknown,
     unknown
   > = (req, res, next) => {
-    this.query
+    this.service
       .getById(req.params.resourceId)
       .then((result) => res.status(200).json(result))
       .catch((err) => next(err))

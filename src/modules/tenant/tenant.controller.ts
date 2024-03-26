@@ -1,9 +1,9 @@
 import { type Router } from 'express'
 import { bodyParser } from 'middleware/body-parser'
 import { type TenantHandler } from './tenant.handlers'
-import { createTenantBodySchema } from './commands/dtos/create-tenant.dto'
+import { createTenantBodySchema } from './dtos/create-tenant.dto'
 import { paramParser } from 'middleware/param-parser'
-import { getTenantByIdParamsSchema } from './queries/dtos/get-by-id.dto'
+import { getTenantByIdParamsSchema } from './dtos/get-by-id.dto'
 
 export class TenantController {
   constructor(

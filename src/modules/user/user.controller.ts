@@ -5,10 +5,10 @@ import { type UserHandler } from './user.handlers'
 import {
   createUserBodySchema,
   createUserParamSchema,
-} from './commands/dtos/create-user.dto'
-import { getUserByIdParamsSchema } from './queries/dtos/get-by-id.dto'
-import { loginBodySchema } from './commands/dtos/login.dto'
-import { validateTokenBodySchema } from './commands/dtos/validate-token.dto'
+} from './dtos/create-user.dto'
+import { getUserByIdParamsSchema } from './dtos/get-by-id.dto'
+import { loginBodySchema } from './dtos/login.dto'
+import { validateTokenBodySchema } from './dtos/validate-token.dto'
 
 export class UserController {
   constructor(

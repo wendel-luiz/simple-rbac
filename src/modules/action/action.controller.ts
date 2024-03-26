@@ -1,9 +1,9 @@
 import { type Router } from 'express'
 import { type ActionHandler } from './action.handler'
-import { createActionBodySchema } from './command/dtos/create-action.dto'
+import { createActionBodySchema } from './dtos/create-action.dto'
 import { bodyParser } from 'middleware/body-parser'
 import { paramParser } from 'middleware/param-parser'
-import { getActionByIdParamsSchema } from './query/dtos/get-by-id.dto'
+import { getActionByIdParamsSchema } from './dtos/get-by-id.dto'
 
 export class ActionController {
   constructor(

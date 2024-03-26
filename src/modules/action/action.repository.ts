@@ -4,8 +4,12 @@ import { type Kysely } from 'kysely'
 export class ActionRepository {
   constructor(private readonly db: Kysely<Database>) {}
 
-  async insert(Action: NewAction): Promise<void> {
-    await this.db.insertInto('action').values(Action).executeTakeFirstOrThrow()
+  async insert(action: NewAction): Promise<Action> {
+    return await this.db
+      .insertInto('action')
+      .values(action)
+      .returningAll()
+      .executeTakeFirstOrThrow()
   }
 
   async findById(id: string): Promise<Action | undefined> {

@@ -1,18 +1,19 @@
 import { generate } from 'short-uuid'
 import { type RoleRepository } from './role.repository'
-import { type CreateRoleBody } from './dtos/create-role.dto'
-import { type TenantRepository } from 'modules/tenant/commands/tenant.repository'
+import { type TenantRepository } from 'modules/tenant/tenant.repository'
 import {
   ConflictException,
   ForbiddenException,
   NotFoundException,
 } from 'lib/exceptions'
-import { type UserRepository } from 'modules/user/commands/user.repository'
-import { type Command } from 'lib/response'
-import { type ResourceRepository } from 'modules/resource/command/resource.repository'
-import { type ActionRepository } from 'modules/action/command/action.repository'
+import { type UserRepository } from 'modules/user/user.repository'
+import { type ResourceRepository } from 'modules/resource/resource.repository'
+import { type ActionRepository } from 'modules/action/action.repository'
+import { type Role } from 'database/types'
+import { type GetRoleByIdResponse } from './dtos/get-by-id'
+import { type CreateRoleBody } from './dtos/create-role.dto'
 
-export class RoleCommand {
+export class RoleService {
   constructor(
     private readonly roleRepo: RoleRepository,
     private readonly tenantRepo: TenantRepository,
@@ -21,7 +22,7 @@ export class RoleCommand {
     private readonly actionRepo: ActionRepository,
   ) {}
 
-  async create(tenantId: string, props: CreateRoleBody): Promise<string> {
+  async create(tenantId: string, props: CreateRoleBody): Promise<Role> {
     const tenant = await this.tenantRepo.findById(tenantId)
     if (tenant == null) {
       throw new NotFoundException('Tenant not found.')
@@ -35,16 +36,16 @@ export class RoleCommand {
     }
 
     const code = generate()
-    await this.roleRepo.insert({
+    const newRole = await this.roleRepo.insert({
       ...props,
       code,
       tenantId: tenant.id,
     })
 
-    return code
+    return newRole
   }
 
-  async addUser(roleId: string, userId: string): Command {
+  async addUser(roleId: string, userId: string): Promise<Role> {
     const role = await this.roleRepo.findById(roleId)
     if (role == null) {
       throw new NotFoundException('Role not found.')
@@ -69,14 +70,14 @@ export class RoleCommand {
       userId: user.id,
     })
 
-    return role.code
+    return role
   }
 
   async addPermission(
     roleId: string,
     resourceId: string,
     actionId: string,
-  ): Command {
+  ): Promise<Role> {
     const role = await this.roleRepo.findById(roleId)
     if (role == null) {
       throw new NotFoundException('Role not found.')
@@ -107,6 +108,20 @@ export class RoleCommand {
       roleId: role.id,
     })
 
-    return role.code
+    return role
+  }
+
+  async getById(id: string): Promise<GetRoleByIdResponse> {
+    const role = await this.roleRepo.findById(id)
+
+    if (role == null) {
+      throw new NotFoundException('Role not found.')
+    }
+
+    return {
+      id: role.code,
+      name: role.name,
+      description: role.description,
+    }
   }
 }
